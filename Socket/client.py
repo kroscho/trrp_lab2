@@ -1,33 +1,47 @@
 import socket
 import os, sys
 import json
+import time
+from config import config
 
 path_dir = (os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(path_dir)
-print(path_dir)
 
 from crypt_data.crypt import Crypt_data
+from normalized_db_Postgres.create_db import create_tables
 from import_data.import_data import Import
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # создаем сокет
-sock.connect(('localhost', 55000))  # подключемся к серверному сокету
-sock.send(bytes('give me data, please', encoding = 'UTF-8'))  # отправляем сообщение
 
-data = b""
-buff_size = 1024
+def main():
+    conf = config()
 
-while True:
-    part = sock.recv(buff_size)  # читаем ответ от серверного сокета частями по 1024 байта
-    data = b"".join([data, part])
-    if len(part) < buff_size:
-        break
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # создаем сокет
+    #sock.connect(('192.168.0.103', 55000))  # подключемся к серверному сокету
+    sock.connect((conf['socket']['host'], int(conf['socket']['port'])))  # подключемся к серверному сокету
+    sock.send(bytes('size', encoding = 'UTF-8'))  # отправляем сообщение
 
-# отправляем данные в нормализованную бд построчно
-data = json.loads(data.decode('utf-8'))   
-imp = Import()
+    #data = b""
+    data = []
+    buff_size = 1024
+    check_size = 50
 
-for d in data:
-    imp.import_data_to_db(d)
+    while True:
+        part = sock.recv(buff_size)  # читаем ответ от серверного сокета частями по 1024 байта
+        time.sleep(0.1)
+        print(len(part))
+        print(part)
+        if len(part) < check_size:
+            break
+        else:
+            data.append(json.loads(part.decode('utf-8')))
 
-sock.close()  # закрываем соединение
+    # отправляем данные в нормализованную бд построчно  
+    imp = Import()
+    create_tables()
+    for d in data:
+        imp.import_data_to_db(d)
 
+    sock.close()  # закрываем соединение
+
+if __name__ == '__main__':
+    main()

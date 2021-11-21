@@ -1,6 +1,10 @@
 from configparser import ConfigParser
+import os, sys
 
-def config(filename=r'D:\ПМИ\4_курс\ТРРП\Лаб2\database.ini', section='postgresql'):
+path_dir = (os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(path_dir)
+
+def config(filename='settings.ini', section='postgresql'):
     # create a parser
     parser = ConfigParser()
     # read config file

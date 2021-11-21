@@ -2,11 +2,11 @@ import psycopg2
 from enum import Enum
 import sys, os.path
 
-path_dir = (os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) + '/normalized_db_Postgres/')
+path_dir = (os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(path_dir)
 
-from config import config
-import sql_queries as sql_queries
+from normalized_db_Postgres.config import config
+import normalized_db_Postgres.sql_queries as sql_queries
 
 class Action(Enum):
     Insert = 1
@@ -73,6 +73,8 @@ class Import:
         if exist_typeBrand:
             id_typeBrand = self.execute_insert(sql_queries.add_typeBrand(), param)
         
+        print("Импорт данных прошел успешно!")
+        
 
     # выполнение запроса
     def execute_insert(self, sql, data):
@@ -109,7 +111,7 @@ class Import:
                 return -1, True
             else:
                 cur.close()
-                print("Найдено")
+                #print("Найдено")
                 return data[0], False 
         
         except (Exception, psycopg2.DatabaseError) as error:

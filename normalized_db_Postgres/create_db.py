@@ -37,7 +37,6 @@ def create_tables():
     execute_query(sql_queries.create_TypeBrand_table)
     print("Таблицы добавлены")
     
-'''   
+
 if __name__ == '__main__':
     create_tables()
-'''

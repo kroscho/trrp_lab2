@@ -34,10 +34,11 @@ def receive_key():
 def receive_data():
     qinfo=win32com.client.Dispatch("MSMQ.MSMQQueueInfo")
     computer_name = os.getenv('COMPUTERNAME')
+    print("comp_name: ", computer_name)
     qinfo.FormatName="direct=os:"+computer_name+"\\PRIVATE$\\data"
     queue=qinfo.Open(1, 0)   # Open a ref to queue to read(1)
     msg=queue.Receive()
-    print("Label: ", msg.Label)
+    #print("Label: ", msg.Label)
     crypto_data = json.loads(msg.Body)
     print ("Body : ", crypto_data)
     
