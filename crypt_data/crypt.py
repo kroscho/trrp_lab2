@@ -1,40 +1,57 @@
-import rsa
+from base64 import b64encode, b64decode
+import hashlib
+from Cryptodome.Cipher import AES
 import json
-from des import DesKey
+from Cryptodome.Random import get_random_bytes
+import rsa
 
-class Crypt_data:
+def encrypt(plain_text, password):
+    # generate a random salt
+    salt = get_random_bytes(AES.block_size)
 
-    def __init__(self, data):
-        """Constructor"""
-        self.data = data
+    # use the Scrypt KDF to get a private key from the password
+    private_key = hashlib.scrypt(
+        password.encode(), salt=salt, n=2**14, r=8, p=1, dklen=32)
 
-    def encrypt_key_rsa(self):
-        """Шифрование ключа ассиметричным шифрованием rsa"""
-        (pubkey, privkey) = rsa.newkeys(512)
-        #message = self.data.encode('utf8')
-        message = self.data
-        crypto_key = rsa.encrypt(message, pubkey) # Зашифровка
-        return crypto_key, privkey
+    # create cipher config
+    cipher_config = AES.new(private_key, AES.MODE_GCM)
 
-    def decrypt_key_rsa(self, crypto, privkey):
-        """Расшифрование ключа ассиметричным шифрованием rsa"""
-        key = rsa.decrypt(crypto, privkey) # Расшифровка
-        print(key.decode('utf8'))
-        return key.decode('utf8')
+    # return a dictionary with the encrypted text
+    cipher_text, tag = cipher_config.encrypt_and_digest(json.dumps(plain_text).encode('utf-8'))
+    return {
+        'cipher_text': b64encode(cipher_text).decode('utf-8'),
+        'salt': b64encode(salt).decode('utf-8'),
+        'nonce': b64encode(cipher_config.nonce).decode('utf-8'),
+        'tag': b64encode(tag).decode('utf-8')
+    }
 
-    def encrypt_data_des(self, key):
-        """шифрование данных при помощи ключа симметричного шифрования (DES)"""
-        key0 = DesKey(str.encode(key))
-        data = json.dumps(self.data).encode('utf-8')
-        #data = self.data.encode('utf8')
-        crypto = key0.encrypt(data, padding=True)
-        return crypto, key0
+def decrypt(enc_dict, password):
+    # decode the dictionary entries from base64
+    salt = b64decode(enc_dict['salt'])
+    cipher_text = b64decode(enc_dict['cipher_text'])
+    nonce = b64decode(enc_dict['nonce'])
+    tag = b64decode(enc_dict['tag'])
 
-    def decrypt_data_des(self, crypto, key):
-        """Расшифрока данных при помощи ключа ассиметричного шифрования (DES)"""
-        decrypto = key.decrypt(crypto, padding=True) 
-        decrypto = json.loads(decrypto.decode('utf-8'))
-        print(decrypto)
-        return decrypto
     
+    # generate the private key from the password and salt
+    private_key = hashlib.scrypt(
+        password.encode(), salt=salt, n=2**14, r=8, p=1, dklen=32)
+
+    # create the cipher config
+    cipher = AES.new(private_key, AES.MODE_GCM, nonce=nonce)
+
+    # decrypt the cipher text
+    decrypted = cipher.decrypt_and_verify(cipher_text, tag)
+
+    return decrypted
+
+def encrypt_key(key):
+    (pubkey, privkey) = rsa.newkeys(2048) # 2048  bits длина ключа
+    message = key.encode('utf8')
+    crypto = rsa.encrypt(message, pubkey) # Зашифровка
+    return crypto, privkey
     
+def decrypt_key(crypto, privkey):
+    message = rsa.decrypt(crypto, privkey) # Расшифровка
+    return message.decode('utf8')
+        
