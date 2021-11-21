@@ -2,6 +2,7 @@ import sys, os.path
 import win32com.client
 import os
 import json
+from config import config
 
 path_dir = (os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(path_dir)
@@ -32,10 +33,11 @@ def receive_key():
     return key_des
 
 def receive_data():
+    conf = config()
     qinfo=win32com.client.Dispatch("MSMQ.MSMQQueueInfo")
     computer_name = os.getenv('COMPUTERNAME')
     print("comp_name: ", computer_name)
-    qinfo.FormatName="direct=os:"+computer_name+"\\PRIVATE$\\data"
+    qinfo.FormatName="direct=os:"+ computer_name+"\\PRIVATE$\\" + conf['msmq']['name']
     queue=qinfo.Open(1, 0)   # Open a ref to queue to read(1)
     msg=queue.Receive()
     #print("Label: ", msg.Label)

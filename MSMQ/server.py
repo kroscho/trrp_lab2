@@ -2,6 +2,7 @@ import win32com.client
 import os
 import sys, os.path
 import json
+from config import config 
 
 path_dir = (os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(path_dir)
@@ -9,13 +10,16 @@ print(path_dir)
 
 from import_data.get_data import get_data
 
+conf = config()
+
 def send_data(data):
-    qinfo=win32com.client.Dispatch("MSMQ.MSMQQueueInfo")
     #computer_name = os.getenv('COMPUTERNAME')
-    computer_name = 'LAPTOP-OIJPISIU'
-    computer_ip = '192.168.0.100'
+    #computer_name = 'LAPTOP-OIJPISIU'
     #qinfo.FormatName="direct=os:"+computer_name+"\\PRIVATE$\\data"
-    qinfo.FormatName="direct=tcp:"+computer_ip+"\\PRIVATE$\\data"
+
+    qinfo=win32com.client.Dispatch("MSMQ.MSMQQueueInfo")
+    computer_ip = conf['msmq']['host']
+    qinfo.FormatName="direct=tcp:"+computer_ip+"\\PRIVATE$\\" + conf['msmq']['name']
     queue=qinfo.Open(2,0) # Open a ref to queue
 
     msg=win32com.client.Dispatch("MSMQ.MSMQMessage")
@@ -26,10 +30,11 @@ def send_data(data):
     queue.Close()
 
 def send_key(key):
-    qinfo=win32com.client.Dispatch("MSMQ.MSMQQueueInfo")
-    computer_name = os.getenv('COMPUTERNAME')
+    #computer_name = os.getenv('COMPUTERNAME')
     #qinfo.FormatName="direct=os:"+computer_name+"\\PRIVATE$\\key"
-    computer_ip = '192.168.0.105'
+    
+    qinfo=win32com.client.Dispatch("MSMQ.MSMQQueueInfo")
+    computer_ip = conf['msmq']['host']
     qinfo.FormatName="direct=tcp:"+computer_ip+"\\PRIVATE$\\key"
     queue=qinfo.Open(2,0) # Open a ref to queue
     msg=win32com.client.Dispatch("MSMQ.MSMQMessage")
