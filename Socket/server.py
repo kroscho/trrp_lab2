@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# vim:fileencoding=utf-8
+
 import os, sys
 import socket
 import json
@@ -10,7 +14,7 @@ sys.path.append(path_dir)
 from crypt_data.crypt import encrypt, decrypt
 from import_data.get_data import get_data
 
-if __name__ == '__main__':
+if __name__ == 'main':
     conf = config()
     password = conf['crypt']['password']
 
@@ -33,9 +37,11 @@ if __name__ == '__main__':
             item = 0
             while item < size_data:
                 #part = json.dumps(data[item]).encode('utf-8')
-                encrypted_part = encrypt(data[item])
+                encrypted_part = encrypt(data[item], password)
                 print(encrypted_part)
-                conn.send(encrypted_part) # отправляем данные клиенту
+                #encrypted_part = (json.loads(decrypt(encrypted_part, password).decode('utf-8')))
+                print()
+                conn.send(json.dumps(encrypted_part).encode('utf-8')) # отправляем данные клиенту
                 time.sleep(0.1)
                 item += 1
     conn.close() # закрываем соединение

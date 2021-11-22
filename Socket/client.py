@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# vim:fileencoding=utf-8
+
 import socket
 import os, sys
 import json
@@ -19,7 +23,7 @@ def get_password():
     sock.connect((conf['socket']['host'], int(conf['socket']['port'])))  # подключемся к серверному сокету
     sock.send(bytes('password', encoding = 'UTF-8'))  # отправляем сообщение
 
-    buff_size = 1024
+    buff_size = 2048
 
     password = sock.recv(buff_size)  # читаем ответ от серверного сокета частями по 1024 байта
     print(password)
@@ -37,20 +41,25 @@ def get_data(password):
 
     #data = b""
     data = []
-    buff_size = 1024
-    check_size = 50
+    buff_size = 2048
+    check_size = 200
 
     while True:
         part = sock.recv(buff_size)  # читаем ответ от серверного сокета частями по 1024 байта
         time.sleep(0.1)
-        print(len(part))
-        print(part)
+        print(len(part))    
         if len(part) < check_size:
             break
         else:
-            #data.append(json.loads(part.decode('utf-8')))
-            data.append(decrypt(part, password).decode('utf-8'))
+            print(json.loads(part.decode('utf-8')))
 
+            part = json.loads(part.decode('utf-8'))
+            print(json.loads(decrypt(part, password).decode('utf-8')))
+            print()
+            #data.append(json.loads(part.decode('utf-8')))
+            data.append(json.loads(decrypt(part, password).decode('utf-8')))
+
+    print(data)
     # отправляем данные в нормализованную бд построчно  
     imp = Import()
     create_tables()
