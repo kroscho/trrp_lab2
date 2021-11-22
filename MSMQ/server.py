@@ -21,7 +21,7 @@ def send_data(data):
 
     qinfo=win32com.client.Dispatch("MSMQ.MSMQQueueInfo")
     computer_ip = conf['msmq']['host']
-    qinfo.FormatName="direct=tcp:"+computer_ip+"\\PRIVATE$\\" + conf['msmq']['name']
+    qinfo.FormatName="direct=tcp:"+computer_ip+"\\PRIVATE$\\" + conf['msmq']['name_data']
     queue=qinfo.Open(2,0) # Open a ref to queue
 
     msg=win32com.client.Dispatch("MSMQ.MSMQMessage")
@@ -37,7 +37,7 @@ def send_key(key):
     
     qinfo=win32com.client.Dispatch("MSMQ.MSMQQueueInfo")
     computer_ip = conf['msmq']['host']
-    qinfo.FormatName="direct=tcp:"+computer_ip+"\\PRIVATE$\\key"
+    qinfo.FormatName="direct=tcp:"+computer_ip+"\\PRIVATE$\\" + conf['msmq']['name_key']
     queue=qinfo.Open(2,0) # Open a ref to queue
     msg=win32com.client.Dispatch("MSMQ.MSMQMessage")
     msg.Label="Key"
