@@ -42,6 +42,6 @@ if __name__ == '__main__':
                 #encrypted_part = (json.loads(decrypt(encrypted_part, password).decode('utf-8')))
                 print()
                 conn.send(json.dumps(encrypted_part).encode('utf-8')) # отправляем данные клиенту
-                time.sleep(0.1)
+                time.sleep(0.2)
                 item += 1
     conn.close() # закрываем соединение
