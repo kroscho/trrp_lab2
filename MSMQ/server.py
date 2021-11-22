@@ -8,9 +8,11 @@ path_dir = (os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(path_dir)
 print(path_dir)
 
+from crypt_data.crypt import encrypt, decrypt
 from import_data.get_data import get_data
 
 conf = config()
+password = conf['crypt']['password']
 
 def send_data(data):
     #computer_name = os.getenv('COMPUTERNAME')
@@ -49,5 +51,10 @@ if __name__ == '__main__':
     #create_tables()
     data = get_data()
     for d in data:
-        d = json.dumps(d)
-        send_data(d)
+        #d = json.dumps(d)
+        encrypted_part = encrypt(d, password)
+        print(encrypted_part)
+        print()
+        send_key(password)
+        send_data(json.dumps(encrypted_part))
+        
