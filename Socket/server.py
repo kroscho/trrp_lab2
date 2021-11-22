@@ -14,7 +14,7 @@ sys.path.append(path_dir)
 from crypt_data.crypt import encrypt, decrypt
 from import_data.get_data import get_data
 
-if __name__ == 'main':
+if __name__ == '__main__':
     conf = config()
     password = conf['crypt']['password']
 

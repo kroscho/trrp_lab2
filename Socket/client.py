@@ -46,7 +46,7 @@ def get_data(password):
 
     while True:
         part = sock.recv(buff_size)  # читаем ответ от серверного сокета частями по 1024 байта
-        time.sleep(0.1)
+        time.sleep(0.2)
         print(len(part))    
         if len(part) < check_size:
             break
