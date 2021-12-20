@@ -20,7 +20,6 @@ def receive_key():
     msg=queue.Receive()
     #print("Label: ", msg.Label)
     key_des = msg.Body
-    key_des = key_des
     print("Key : ", key_des)
     queue.Close()
     return key_des
@@ -47,7 +46,6 @@ if __name__ == '__main__':
     while True:
         try:
             password = receive_key()
-            print(password)
             data = receive_data(password)
         except KeyboardInterrupt:
             print('Interrupted')

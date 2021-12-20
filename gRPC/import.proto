@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package unary;
+
+service Unary{
+  // A simple RPC.
+  //
+  // Obtains the MessageResponse at a given position.
+ rpc GetServerResponse(Message) returns (MessageResponse) {}
+
+}
+
+message Message{
+  int32 id = 1;
+  int32 user_id = 2;
+  string name = 3;
+  string email = 4;
+  string password = 5;
+  string role = 6;
+  int32 device_id = 7;
+  string device_name = 8;
+  int32 price = 9;
+  int32 rating = 10;
+  int32 type_id = 11;
+  string type_name = 12;
+  int32 brand_id = 13;
+  string brand_name = 14;
+  string title = 15;
+  string description = 16; 
+}
+
+message MessageResponse{
+  bool success = 1;
+}

@@ -74,6 +74,7 @@ class Import:
             id_typeBrand = self.execute_insert(sql_queries.add_typeBrand(), param)
         
         print("Импорт данных прошел успешно!")
+        return True
         
 
     # выполнение запроса
